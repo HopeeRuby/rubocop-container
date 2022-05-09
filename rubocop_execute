@@ -1,0 +1,28 @@
+#!/bin/bash
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -f FilePath"
+   echo -e "\t-f File Path"
+   exit 1
+}
+
+while getopts "f:" opt
+do
+   case "$opt" in
+      f ) FilePath="$OPTARG" ;;
+      ? ) helpFunction ;;
+   esac
+done
+
+if [ -z "$FilePath" ]
+then
+   echo "Missing file path";
+   helpFunction
+else
+   cp $FilePath app
+   basename "$FilePath"
+   f="$(basename -- $FilePath)"
+   docker-compose run --rm server bundle exec rubocop /webapp/app/$f
+   rm -rf app/$f
+fi
